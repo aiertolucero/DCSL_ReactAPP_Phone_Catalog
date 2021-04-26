@@ -40,9 +40,9 @@ export default class Phones extends Component {
     render() {
         return (
             <Container className="mt-5">
-                <div class={!this.state.isLoading ? 'd-none' : 'd-flex justify-content-center'}>
-                    <div class="spinner-border " id="page-spinner" role="status">
-                        <span class="sr-only d-flex justify-content-center">Loading...</span>
+                <div className={!this.state.isLoading ? 'd-none' : 'd-flex justify-content-center'}>
+                    <div className="spinner-border " id="page-spinner" role="status">
+                        <span className="sr-only d-flex justify-content-center">Loading...</span>
                     </div>
                 </div>
                 <CardColumns>
@@ -53,9 +53,9 @@ export default class Phones extends Component {
                                     <Card.Img className="p-3" variant="top" src={d.imageFileName} />
                                     <Card.Body>
                                     <Card.Title>
-                                        <p class="d-flex">
+                                        <p className="d-flex">
                                             <span>{d.name}</span>
-                                            <span class="ml-auto badge badge-danger">${d.price}</span>
+                                            <span className="ml-auto badge badge-danger">${d.price}</span>
                                         </p>
                                     </Card.Title>
                                     <Card.Text>
@@ -70,9 +70,9 @@ export default class Phones extends Component {
                 <Container id="modalContainer">
                     <ReactModal isOpen={this.state.showModal} parentSelector={() => document.querySelector('#modalContainer')}>
                         <Row>
-                            {this.state.phoneDetails == ""
-                                ?   <div class="spinner-border" id="page-spinner" role="status">
-                                        <span class="sr-only">Loading...</span>
+                            {this.state.phoneDetails === ""
+                                ?   <div className="spinner-border" id="page-spinner" role="status">
+                                        <span className="sr-only">Loading...</span>
                                     </div>
                                 :   <ViewPhone handleCloseModal={this.handleCloseModal} phoneDetails={this.state.phoneDetails}/>
                             }

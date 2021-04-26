@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Container, Row, Button, Table, Col } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import axios from 'axios';
+import {ApiInstance as apiInstance} from '../ApiInstance.js';
 import AddPhone from './modals/AddPhone';
 import EditPhone from './modals/EditPhone';
 import ReactModal from 'react-modal';
@@ -20,10 +20,23 @@ export default class ManagePhones extends Component {
         };
 
         this.closeEditModal = this.closeEditModal.bind(this);
+        this.closeAddModal = this.closeAddModal.bind(this);
+        this.getPhoneList = this.getPhoneList.bind(this);
+        
     }
 
     componentDidMount() {
-        axios.get('https://glacial-refuge-41061.herokuapp.com/api/phones')
+        this.getPhoneList()
+    }
+
+    componentWillMount() {
+        ReactModal.setAppElement('body');
+    }
+
+    getPhoneList() {
+        this.setState({ isLoading: true });
+
+        apiInstance.get('/phones')
             .then(res => {
                 this.setState({ phones: res.data });
                 this.setState({ isLoading: false });
@@ -33,18 +46,17 @@ export default class ManagePhones extends Component {
             })
     }
 
-    handleClickDelete() {
+    handleClickDelete(id) {
         confirmAlert({
             title: 'Delete Phone',
             message: 'Are you sure to do this?',
             buttons: [
               {
                 label: 'Yes',
-                onClick: () => alert('Click Yes')
+                onClick: () => this.handleDeletePhone(id)
               },
               {
-                label: 'No',
-                onClick: () => alert('Click No')
+                label: 'Cancel'
               }
             ]
           });
@@ -54,9 +66,29 @@ export default class ManagePhones extends Component {
         this.setState({ showEditModal: false });
     }
 
+    closeAddModal(){
+        this.setState({ showAddModal: false });
+    }
+
     handleClickEdit(d) {
         this.setState({ phoneDetails: d });
         this.setState({ showEditModal: true });
+    }
+
+    handleClickAdd(){
+        this.setState({ showAddModal: true });
+    }
+    
+    handleDeletePhone(id){
+        this.setState({ isLoading: true });
+        apiInstance.delete('/phones/'+id)
+            .then(res => {
+                this.setState({ isLoading: false });
+                this.getPhoneList();
+            })
+            .catch(function (error) {
+                this.setState({ isLoading: false });
+            })
     }
 
     render() {
@@ -68,8 +100,8 @@ export default class ManagePhones extends Component {
                 <hr />
                 <Row>
                     <Col>
-                        <div class="text-right">
-                            <Button variant="success">Create</Button>
+                        <div className="text-right">
+                            <Button variant="success" onClick={() => this.handleClickAdd()}>Create</Button>
                         </div>
                     </Col>
                 </Row>
@@ -86,7 +118,17 @@ export default class ManagePhones extends Component {
                             </thead>
                             <tbody>
                                 {
-                                    this.state.phones.map(
+                                    this.state.isLoading 
+                                    ?   <tr>
+                                            <td colSpan={4}>
+                                                <div className="d-flex justify-content-center">
+                                                    <div className="spinner-border " id="page-spinner" role="status">
+                                                        <span className="sr-only d-flex justify-content-center">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    : this.state.phones.map(
                                         d => (
                                             <tr key={d.id}>
                                                 <td>{d.id}</td>
@@ -101,7 +143,7 @@ export default class ManagePhones extends Component {
                                                     </Button>
                                                     <Button variant="danger" 
                                                             size="sm" 
-                                                            onClick={() => {this.handleClickDelete()}}>
+                                                            onClick={() => {this.handleClickDelete(d.id)}}>
                                                             Remove
                                                     </Button>
                                                 </td>
@@ -116,12 +158,19 @@ export default class ManagePhones extends Component {
                 <Container id="editModalContainer">
                     <ReactModal isOpen={this.state.showEditModal} parentSelector={() => document.querySelector('#editModalContainer')}>
                         <Row>
-                            {this.state.phoneDetails == ""
-                                ?   <div class="spinner-border" id="page-spinner" role="status">
-                                        <span class="sr-only">Loading...</span>
+                            {this.state.phoneDetails === ""
+                                ?   <div className="spinner-border" id="page-spinner" role="status">
+                                        <span className="sr-only">Loading...</span>
                                     </div>
-                                :   <EditPhone closeEditModal={this.closeEditModal} phoneDetails={this.state.phoneDetails}/>
+                                :   <EditPhone closeEditModal={this.closeEditModal} phoneDetails={this.state.phoneDetails} refreshList={this.getPhoneList} />
                             }
+                        </Row>
+                    </ReactModal>
+                </Container>
+                <Container id="addModalContainer">
+                    <ReactModal isOpen={this.state.showAddModal} parentSelector={() => document.querySelector('#addModalContainer')}>
+                        <Row>
+                            <AddPhone closeAddModal={this.closeAddModal} refreshList={this.getPhoneList} />
                         </Row>
                     </ReactModal>
                 </Container>

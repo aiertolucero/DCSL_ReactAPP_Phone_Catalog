@@ -1,28 +1,52 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Modal, Form, Button } from 'react-bootstrap';
+import {ApiInstance as apiInstance} from '../../ApiInstance.js';
 
 export default class ViewPhone extends Component {
     constructor(props) {
         super(props);
         this.state = { 
-            name: this.props.phoneDetails.name,
-            manufacturer: this.props.phoneDetails.manufacturer,
-            description: this.props.phoneDetails.description,
-            color: this.props.phoneDetails.color,
-            price: this.props.phoneDetails.price,
-            imageFileName: this.props.phoneDetails.imageFileName,
-            screen: this.props.phoneDetails.screen,
-            processor: this.props.phoneDetails.processor,
-            ram: this.props.phoneDetails.ram
+            phoneDetails : {
+                name: this.props.phoneDetails.name,
+                manufacturer: this.props.phoneDetails.manufacturer,
+                description: this.props.phoneDetails.description,
+                color: this.props.phoneDetails.color,
+                price: this.props.phoneDetails.price,
+                imageFileName: this.props.phoneDetails.imageFileName,
+                screen: this.props.phoneDetails.screen,
+                processor: this.props.phoneDetails.processor,
+                ram: this.props.phoneDetails.ram
+            }
         };
 
         this.handleFormChange = this.handleFormChange.bind(this);
+        this.savePhoneDetails = this.savePhoneDetails.bind(this);
     }
     
     handleFormChange(evt) {
         this.setState({
-            [evt.target.name]: evt.target.value
+            phoneDetails: {
+                ...this.state.phoneDetails,
+                [evt.target.name]: evt.target.value
+            }
         });
+    }
+
+    savePhoneDetails(id) {
+        var self=this;
+
+        apiInstance.put('/phones/'+id, this.state.phoneDetails)
+            .then(res => {
+                if(res.data.success){
+                    self.props.closeEditModal()
+                    self.props.refreshList()
+                } else {
+                    alert('Unable to update Phone. Please check your inputs.');
+                }
+            })
+            .catch(function (error) {
+                self.props.closeEditModal()
+            })
     }
 
     render() {
@@ -39,7 +63,7 @@ export default class ViewPhone extends Component {
                                         Name
                                     </Form.Label>
                                     <Col sm="10">
-                                        <Form.Control type="text" placeholder="Name" name="name" value={this.state.name} onChange={this.handleFormChange}/>
+                                        <Form.Control type="text" placeholder="Name" name="name" value={this.state.phoneDetails.name} onChange={this.handleFormChange}/>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group as={Row}>
@@ -47,7 +71,7 @@ export default class ViewPhone extends Component {
                                         Manufacturer
                                     </Form.Label>
                                     <Col sm="10">
-                                        <Form.Control type="text" placeholder="Manufacturer" name="manufacturer" value={this.state.manufacturer} onChange={this.handleFormChange}/>
+                                        <Form.Control type="text" placeholder="Manufacturer" name="manufacturer" value={this.state.phoneDetails.manufacturer} onChange={this.handleFormChange}/>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group as={Row}>
@@ -55,7 +79,7 @@ export default class ViewPhone extends Component {
                                         Description
                                     </Form.Label>
                                     <Col sm="10">
-                                        <Form.Control type="text" placeholder="Description" name="description" value={this.state.description} onChange={this.handleFormChange}/>
+                                        <Form.Control type="text" placeholder="Description" name="description" value={this.state.phoneDetails.description} onChange={this.handleFormChange}/>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group as={Row}>
@@ -63,7 +87,7 @@ export default class ViewPhone extends Component {
                                         Color
                                     </Form.Label>
                                     <Col sm="10">
-                                        <Form.Control type="text" placeholder="Color" name="color" value={this.props.phoneDetails.color} onChange={this.handleFormChange}/>
+                                        <Form.Control type="text" placeholder="Color" name="color" value={this.state.phoneDetails.color} onChange={this.handleFormChange}/>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group as={Row}>
@@ -71,7 +95,7 @@ export default class ViewPhone extends Component {
                                         Price
                                     </Form.Label>
                                     <Col sm="10">
-                                        <Form.Control type="text" placeholder="Price" name="price" value={this.props.phoneDetails.price} onChange={this.handleFormChange}/>
+                                        <Form.Control type="text" placeholder="Price" name="price" value={this.state.phoneDetails.price} onChange={this.handleFormChange}/>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group as={Row}>
@@ -79,7 +103,7 @@ export default class ViewPhone extends Component {
                                         Image
                                     </Form.Label>
                                     <Col sm="10">
-                                        <Form.Control type="text" placeholder="Image url" name="imageFileName" value={this.props.phoneDetails.imageFileName} onChange={this.handleFormChange}/>
+                                        <Form.Control type="text" placeholder="Image url" name="imageFileName" value={this.state.phoneDetails.imageFileName} onChange={this.handleFormChange}/>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group as={Row}>
@@ -87,7 +111,7 @@ export default class ViewPhone extends Component {
                                         Screen
                                     </Form.Label>
                                     <Col sm="10">
-                                        <Form.Control type="text" placeholder="Screen" name="screen" value={this.props.phoneDetails.screen} onChange={this.handleFormChange}/>
+                                        <Form.Control type="text" placeholder="Screen" name="screen" value={this.state.phoneDetails.screen} onChange={this.handleFormChange}/>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group as={Row}>
@@ -95,7 +119,7 @@ export default class ViewPhone extends Component {
                                         Processor
                                     </Form.Label>
                                     <Col sm="10">
-                                        <Form.Control type="text" placeholder="Processor" name="processor" value={this.props.phoneDetails.processor} onChange={this.handleFormChange}/>
+                                        <Form.Control type="text" placeholder="Processor" name="processor" value={this.state.phoneDetails.processor} onChange={this.handleFormChange}/>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group as={Row}>
@@ -103,7 +127,7 @@ export default class ViewPhone extends Component {
                                         Ram
                                     </Form.Label>
                                     <Col sm="10">
-                                        <Form.Control type="text" placeholder="Ram" name="ram" value={this.props.phoneDetails.ram} onChange={this.handleFormChange}/>
+                                        <Form.Control type="text" placeholder="Ram" name="ram" value={this.state.phoneDetails.ram} onChange={this.handleFormChange}/>
                                     </Col>
                                 </Form.Group>
                             </Form>
@@ -111,7 +135,7 @@ export default class ViewPhone extends Component {
                     </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="success" onClick={this.props.savePhoneDetails}>
+                    <Button variant="success" onClick={() => this.savePhoneDetails(this.props.phoneDetails.id)}>
                         Save
                     </Button>
                     <Button variant="secondary" onClick={this.props.closeEditModal}>
