@@ -1,7 +1,8 @@
-import React, { Component, useState } from 'react';
-import { Container, Card, CardColumns, Modal, Button, Row, Col, Image, Table } from 'react-bootstrap';
+import React, { Component } from 'react';
+import { Container, Card, CardColumns, Row} from 'react-bootstrap';
 import ReactModal from 'react-modal';
-import axios from 'axios';
+import ViewPhone from './modals/ViewPhone';
+import {ApiInstance as apiInstance} from '../ApiInstance.js';
 
 export default class Phones extends Component {
     constructor(props) {
@@ -17,7 +18,7 @@ export default class Phones extends Component {
     }
 
     componentDidMount() {
-        axios.get('https://glacial-refuge-41061.herokuapp.com/api/phones')
+        apiInstance.get('/phones')
             .then(res => {
                 this.setState({ phones: res.data });
                 this.setState({ isLoading: false });
@@ -66,68 +67,18 @@ export default class Phones extends Component {
                         )
                     } 
                 </CardColumns>
-                
                 <Container id="modalContainer">
-                   
+                    <ReactModal isOpen={this.state.showModal} parentSelector={() => document.querySelector('#modalContainer')}>
+                        <Row>
+                            {this.state.phoneDetails == ""
+                                ?   <div class="spinner-border" id="page-spinner" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                :   <ViewPhone handleCloseModal={this.handleCloseModal} phoneDetails={this.state.phoneDetails}/>
+                            }
+                        </Row>
+                    </ReactModal>
                 </Container>
-
-
-                <ReactModal isOpen={this.state.showModal} parentSelector={() => document.querySelector('#modalContainer')}>
-                    <Row>
-                        {this.state.phoneDetails == ""
-                            ?   <div class="spinner-border" id="page-spinner" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            :   <Container>
-                                    <Modal.Body>
-                                        <Row>
-                                            <Col sm={4}>
-                                                <Image className="w-100" src={this.state.phoneDetails.imageFileName} rounded />
-                                            </Col>
-                                            <Col sm={8}>
-                                                <h1>{this.state.phoneDetails.name}</h1>
-                                                <p>{this.state.phoneDetails.description}</p>
-                                                <Table striped bordered hover size="sm">
-                                                    <tbody>
-                                                        <tr>
-                                                            <th>Manufacturer</th>
-                                                            <td>{this.state.phoneDetails.manufacturer}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Color</th>
-                                                            <td>{this.state.phoneDetails.color}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Screen</th>
-                                                            <td>{this.state.phoneDetails.screen}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Processor</th>
-                                                            <td>{this.state.phoneDetails.processor}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Ram</th>
-                                                            <td>{this.state.phoneDetails.ram}</td>
-                                                        </tr>
-                                                        <tr className="bg-danger text-white">
-                                                            <th>Price</th>
-                                                            <td>{this.state.phoneDetails.price}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </Table>
-                                            </Col>
-                                        </Row>
-                                    </Modal.Body>
-                                    <Modal.Footer>
-                                        <Button variant="secondary" onClick={this.handleCloseModal}>
-                                            Close
-                                        </Button>
-                                    </Modal.Footer>
-                                </Container>
-                                
-                        }
-                    </Row>
-                </ReactModal>
             </Container>
         )
     }

@@ -15,8 +15,8 @@ function Navigation() {
                         <LinkContainer to="/phones">
                             <Nav.Link>Phones</Nav.Link>
                         </LinkContainer>
-                        <LinkContainer to="/upload">
-                            <Nav.Link>Upload</Nav.Link>
+                        <LinkContainer to="/manage">
+                            <Nav.Link>Manage</Nav.Link>
                         </LinkContainer>
                     </Nav>
                 </Navbar.Collapse>
